@@ -15,6 +15,7 @@ module Fb
   class HTTPRequest
     # Initializes a Request object.
     # @param [Hash] options the options for the request.
+    # @option options [Symbol] :method (:get) The HTTP method to use.
     # @option options [Class] :expected_response (Net::HTTPSuccess) The class
     #   of response that the request should obtain when run.
     # @option options [String] :host The host of the request URI.
@@ -26,6 +27,7 @@ module Fb
     # @option options [Proc] :error_message The block that will be invoked
     #   when a request fails.
     def initialize(options = {})
+      @method = options.fetch :method, :get
       @expected_response = options.fetch :expected_response, Net::HTTPSuccess
       @host = options.fetch :host, 'graph.facebook.com'
       @path = options[:path]
@@ -63,11 +65,13 @@ module Fb
 
     # @return [Net::HTTPRequest] the full HTTP request object.
     def http_request
-      @http_request ||= Net::HTTP::Get.new uri.request_uri
+      net_http_class = Object.const_get "Net::HTTP::#{@method.capitalize}"
+      @http_request ||= net_http_class.new uri.request_uri
     end
 
     def as_curl
       'curl'.tap do |curl|
+        curl <<  " -X #{http_request.method}"
         http_request.each_header{|k, v| curl << %Q{ -H "#{k}: #{v}"}}
         curl << %Q{ "#{url}"}
       end
