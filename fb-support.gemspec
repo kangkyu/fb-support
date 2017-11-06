@@ -6,8 +6,8 @@ require 'fb/support/version'
 Gem::Specification.new do |spec|
   spec.name          = 'fb-support'
   spec.version       = Fb::Support::VERSION
-  spec.authors       = ['Claudio Baccigalupo']
-  spec.email         = ['claudio@fullscreen.net']
+  spec.authors       = ['Claudio Baccigalupo', 'Aaron Dao']
+  spec.email         = ['claudio@fullscreen.net', 'hdao61@gmail.com']
 
   spec.summary       = %q{Support utilities for Fb gems}
   spec.description   = %q{Fb::Support provides common functionality to Fb,
