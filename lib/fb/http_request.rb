@@ -81,7 +81,7 @@ module Fb
     def response
       @response ||= Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
         curl_request = as_curl
-        p curl_request if Fb.configuration.developing?
+        print curl_request if Fb.configuration.developing?
         http.request http_request
       end
     end
