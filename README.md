@@ -20,6 +20,16 @@ Fb::Support provides:
 * [Fb::HTTPRequest](http://www.rubydoc.info/gems/fb-support/Fb/HTTPRequest)
 * [Fb::HTTPError](http://www.rubydoc.info/gems/fb-support/Fb/HTTPError)
 
+## Waiting Time
+
+Facebook has [hourly rate limiting](https://developers.facebook.com/docs/graph-api/advanced/rate-limiting/#application-level-rate-limiting). `Fb::HTTPRequest` has `waiting_time` class variable
+to sleep the amount of time (in seconds) when it is approaching (with 85% of usage)
+in case the variable is set as follows.
+
+```rb
+Fb::HTTPRequest.waiting_time = 360
+```
+
 How to test
 ===========
 

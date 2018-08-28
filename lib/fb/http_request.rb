@@ -34,11 +34,21 @@ module Fb
       @params = options.fetch :params, {}
     end
 
+    class << self
+      # @return [Integer] time in seconds for waiting when hourly rate limit
+      #   for the Facebook app reached over 85%
+      attr_accessor :waiting_time
+    end
+
     # Sends the request and returns the response with the body parsed from JSON.
     # @return [Net::HTTPResponse] if the request succeeds.
     # @raise [Fb::HTTPError] if the request fails.
     def run
       if response.is_a? @expected_response
+        if (waiting_time = self.class.waiting_time) &&
+          rate_limiting_header.values.any? {|value| value > 85 }
+          sleep waiting_time
+        end
         response.tap do
           parse_response!
         end
@@ -50,6 +60,11 @@ module Fb
     # @return [String] the request URL.
     def url
       uri.to_s
+    end
+
+    # @return [Hash] rate limit status in the response header.
+    def rate_limiting_header
+      JSON response.to_hash['x-app-usage'][0]
     end
 
   private
