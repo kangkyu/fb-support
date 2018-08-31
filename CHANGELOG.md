@@ -7,6 +7,11 @@ For more information about changelogs, check
 [Vandamme](http://tech-angels.github.io/vandamme).
 
 
+## 1.0.0.alpha6 - 2018-08-24
+
+* [BUGFIX] Do not raise error from `rate_limiting_header` when
+ response does not have the usage status header.
+
 ## 1.0.0.alpha5 - 2018-08-23
 
 * [FEATURE] Wait when usage status is approaching limit.
