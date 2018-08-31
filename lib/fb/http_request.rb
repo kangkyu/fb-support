@@ -45,7 +45,7 @@ module Fb
     # @raise [Fb::HTTPError] if the request fails.
     def run
       if response.is_a? @expected_response
-        if (waiting_time = self.class.waiting_time) &&
+        if (waiting_time = self.class.waiting_time) && rate_limiting_header &&
           rate_limiting_header.values.any? {|value| value > 85 }
           sleep waiting_time
         end
@@ -64,7 +64,8 @@ module Fb
 
     # @return [Hash] rate limit status in the response header.
     def rate_limiting_header
-      JSON response.to_hash['x-app-usage'][0]
+      usage = response.to_hash['x-app-usage']
+      JSON usage[0] if usage
     end
 
   private
