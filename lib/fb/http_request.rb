@@ -35,9 +35,8 @@ module Fb
     end
 
     class << self
-      # @return [Integer] time in seconds for waiting when hourly rate limit
-      #   for the Facebook app reached over 85%
-      attr_accessor :waiting_time
+      # Callback invoked with the response object on a successful response. Defaults to a noop.
+      attr_accessor :on_response
     end
 
     # Sends the request and returns the response with the body parsed from JSON.
@@ -45,10 +44,7 @@ module Fb
     # @raise [Fb::HTTPError] if the request fails.
     def run
       if response.is_a? @expected_response
-        if (waiting_time = self.class.waiting_time) && rate_limiting_header &&
-          rate_limiting_header.values.any? {|value| value > 85 }
-          sleep waiting_time
-        end
+        self.class.on_response.call(response)
         response.tap do
           parse_response!
         end
@@ -115,3 +111,5 @@ module Fb
     end
   end
 end
+
+Fb::HTTPRequest.on_response = lambda {|_|}

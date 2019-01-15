@@ -6,6 +6,9 @@ For more information about changelogs, check
 [Keep a Changelog](http://keepachangelog.com) and
 [Vandamme](http://tech-angels.github.io/vandamme).
 
+## 1.0.0.alpha7 - 2019-01-15
+
+* Remove `waiting_time` and add `on_response` callback.
 
 ## 1.0.0.alpha6 - 2018-08-24
 
