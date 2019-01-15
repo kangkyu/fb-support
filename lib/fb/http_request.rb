@@ -35,8 +35,16 @@ module Fb
     end
 
     class << self
+      @@on_response = lambda {|_|}
+
       # Callback invoked with the response object on a successful response. Defaults to a noop.
-      attr_accessor :on_response
+      def on_response
+        @@on_response
+      end
+
+      def on_response=(callback)
+        @@on_response = callback
+      end
     end
 
     # Sends the request and returns the response with the body parsed from JSON.
@@ -111,5 +119,3 @@ module Fb
     end
   end
 end
-
-Fb::HTTPRequest.on_response = lambda {|_|}
