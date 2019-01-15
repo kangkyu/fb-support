@@ -29,16 +29,21 @@ describe 'Fb::HTTPRequest#run' do
     let(:request) { Fb::HTTPRequest.new path: path, params: params }
 
     before do
-      @response = false
-      Fb::HTTPRequest.on_response = lambda { |res| @response = res }
+      @request = nil
+      @response = nil
+      Fb::HTTPRequest.on_response = lambda { |req, res|
+        @request = req
+        @response = res
+      }
     end
 
     after do
-      Fb::HTTPRequest.on_response = lambda {|_|}
+      Fb::HTTPRequest.on_response = lambda {|_,_|}
     end
 
     it 'calls the callback with the response object' do
       request.run
+      expect(@request).to be_a(Fb::HTTPRequest)
       expect(@response).to be_a(Net::HTTPOK)
     end
   end
