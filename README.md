@@ -20,14 +20,23 @@ Fb::Support provides:
 * [Fb::HTTPRequest](http://www.rubydoc.info/gems/fb-support/Fb/HTTPRequest)
 * [Fb::HTTPError](http://www.rubydoc.info/gems/fb-support/Fb/HTTPError)
 
-## Waiting Time
+## Response callback
 
-Facebook has [hourly rate limiting](https://developers.facebook.com/docs/graph-api/advanced/rate-limiting/#application-level-rate-limiting). `Fb::HTTPRequest` has `waiting_time` class variable
-to sleep the amount of time (in seconds) when it is approaching (with 85% of usage)
-in case the variable is set as follows.
+`Fb::HTTPRequest` has an `on_response` callback which is invoked with
+the request object and the HTTP response object on a successful
+response. This can be used for introspecting responses, performing some
+action when rate limit is near, etc.
 
 ```rb
-Fb::HTTPRequest.waiting_time = 360
+Fb::HTTPRequest.on_response = lambda do |request, response|
+  usage = request.rate_limiting_header
+  Librato.measure 'fb.call_count', usage['call_count']
+  Librato.measure 'fb.total_cputime', usage['total_cputime']
+  Librato.measure 'fb.total_time', usage['total_time']
+  if usage.values.any? {|value| value > 85 }
+    sleep 180
+  end
+end
 ```
 
 How to test

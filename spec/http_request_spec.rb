@@ -24,25 +24,27 @@ describe 'Fb::HTTPRequest#run' do
     end
   end
 
-  context 'given a valid request with rate limit almost all used' do
+  context 'given a valid request with a callback set' do
     let(:path) { '/v2.10/221406534569729' }
     let(:request) { Fb::HTTPRequest.new path: path, params: params }
 
     before do
-      allow_any_instance_of(Fb::HTTPRequest).to receive(:rate_limiting_header)
-        .and_return({"call_count"=>91, "total_cputime"=>0, "total_time"=>0})
-      Fb::HTTPRequest.waiting_time = 8
+      @request = nil
+      @response = nil
+      Fb::HTTPRequest.on_response = lambda { |req, res|
+        @request = req
+        @response = res
+      }
     end
 
     after do
-      Fb::HTTPRequest.waiting_time = nil
+      Fb::HTTPRequest.on_response = lambda {|_,_|}
     end
 
-    it 'sleeps for the waiting time' do
-      time1 = Time.now
+    it 'calls the callback with the response object' do
       request.run
-      time2 = Time.now
-      expect(time2 - time1).to be_within(1).of(8)
+      expect(@request).to be_a(Fb::HTTPRequest)
+      expect(@response).to be_a(Net::HTTPOK)
     end
   end
 end
