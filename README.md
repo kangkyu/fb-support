@@ -23,21 +23,20 @@ Fb::Support provides:
 ## Response callback
 
 `Fb::HTTPRequest` has an `on_response` callback which is invoked with
-the HTTP response object on a successful response. This can be used for
-introspecting responses, performing some action when rate limit is near,
-etc.
+the request object and the HTTP response object on a successful
+response. This can be used for introspecting responses, performing some
+action when rate limit is near, etc.
 
 ```rb
-Fb::HTTPRequest.on_response = lambda { |res|
-  usage = res.fetch('x-app-usage', ['{}'])
-  parsed = JSON.parse(usage)
-  Librato.measure 'fb.call_count', parsed['call_count']
-  Librato.measure 'fb.total_cputime', parsed['total_cputime']
-  Librato.measure 'fb.total_time', parsed['total_time']
-  if parsed['call_count'] > 85
-    sleep 5
+Fb::HTTPRequest.on_response = lambda do |request, response|
+  usage = request.rate_limiting_header
+  Librato.measure 'fb.call_count', usage['call_count']
+  Librato.measure 'fb.total_cputime', usage['total_cputime']
+  Librato.measure 'fb.total_time', usage['total_time']
+  if usage.values.any? {|value| value > 85 }
+    sleep 180
   end
-}
+end
 ```
 
 How to test
