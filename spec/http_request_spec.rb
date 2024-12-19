@@ -1,12 +1,12 @@
 require 'spec_helper'
 
 describe 'Fb::HTTPRequest#run' do
-  let(:params) { {fields: 'id,is_verified,link', access_token: access_token} }
+  let(:params) { {fields: 'id,name', access_token: access_token} }
   let(:request) { Fb::HTTPRequest.new path: path, params: params }
   let(:access_token) { ENV['FB_TEST_ACCESS_TOKEN'] }
 
   context 'given a valid GET request to a Facebook Graph API endpoint' do
-    let(:path) { '/v2.10/221406534569729' }
+    let(:path) { '/v21.0/1358426871806328' }
 
     it 'returns the HTTP response with the JSON-parsed body' do
       response = request.run
@@ -17,7 +17,7 @@ describe 'Fb::HTTPRequest#run' do
 
   context 'given a invalid GET request to a Facebook JSON API' do
     let(:path) { '/v2.10/1' }
-    let(:message) { '(#803) Some of the aliases you requested do not exist: 1' }
+    let(:message) { "Unsupported get request. Object with ID '1' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api" }
 
     it 'raises an HTTPError' do
       expect{request.run}.to raise_error Fb::HTTPError, message
@@ -25,7 +25,7 @@ describe 'Fb::HTTPRequest#run' do
   end
 
   context 'given a valid request with a callback set' do
-    let(:path) { '/v2.10/221406534569729' }
+    let(:path) { '/v21.0/1358426871806328' }
     let(:request) { Fb::HTTPRequest.new path: path, params: params }
 
     before do
@@ -64,7 +64,7 @@ describe 'Fb::HTTPRequest#rate_limiting_header' do
   let(:params) { {fields: 'id', access_token: access_token} }
   let(:request) { Fb::HTTPRequest.new path: path, params: params }
   let(:access_token) { ENV['FB_TEST_ACCESS_TOKEN'] }
-  let(:path) { '/v2.10/221406534569729' }
+  let(:path) { '/v21.0/1358426871806328' }
 
   context 'given a valid GET request to a Facebook Graph API endpoint' do
     it 'returns the request rate limiting header' do
