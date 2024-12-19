@@ -16,7 +16,7 @@ describe 'Fb::HTTPRequest#run' do
   end
 
   context 'given a invalid GET request to a Facebook JSON API' do
-    let(:path) { '/v2.10/1' }
+    let(:path) { '/v21.0/1' }
     let(:message) { "Unsupported get request. Object with ID '1' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api" }
 
     it 'raises an HTTPError' do
